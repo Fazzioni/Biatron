@@ -1,0 +1,15 @@
+__pycache__
+checkpoints
+checkpoints2
+data
+resoaning
+.env
+Fineweb
+flash-attention
+home
+hugginface
+karpathy
+megatron_venv
+outputs
+*.out
+/huggingface

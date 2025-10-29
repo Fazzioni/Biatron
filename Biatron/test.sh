@@ -1,0 +1,37 @@
+python -m inference.py \
+--exit-on-missing-checkpoint\
+--transformer-impl local\
+--load /raid/aluno_daniel/projects/BIA-MEGATRON/Biatron/checkpoints/\
+--tokenizer-type HuggingFaceTokenizer\
+--vocab-file /raid/aluno_daniel/projects/BIA-MEGATRON/Biatron/tokenizer/vocab.json\
+--merge-file /raid/aluno_daniel/projects/BIA-MEGATRON/Biatron/tokenizer/merge.txt\
+--exit-on-missing-checkpoint\
+--max-position-embeddings 2048\
+--seq-length 2048\
+--tensor-model-parallel-size 1\
+--pipeline-model-parallel-size 1\
+--num-layers 30\
+--num-attention-heads 9\
+--group-query-attention\
+--vocab-size 49152\
+--num-query-groups 3\
+--hidden-size 576\
+--position-embedding-type rope\
+    --rotary-base 1000000\
+    --rotary-percent 1.0\
+    --bf16\
+    --micro-batch-size 1\
+    --attention-dropout 0.0\
+    --hidden-dropout 0.0\
+    --seed 42\
+    --inference-rng-tracker\
+ --inference-dynamic-batching\
+ --inference-dynamic-batching-buffer-size-gb 2.\
+ --inference-dynamic-batching-buffer-overflow-factor 1.\
+ --inference-dynamic-batching-buffer-guaranteed-fraction 0.05\
+  --tensor-model-parallel-size 1 \
+  --pipeline-model-parallel-size 1\
+    --num-tokens-to-prompt 8 32 \
+    --num-tokens-to-generate 256 \
+    --incoming-requests-duration 10. \
+    --incoming-requests-per-sec 100.
