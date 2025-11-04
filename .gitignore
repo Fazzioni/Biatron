@@ -1,0 +1,10 @@
+.env
+.vscode
+checkpoints
+checkpoints_old
+dados
+flash-attention
+HOME
+tokenizer
+*.out
+Megatron-LM
