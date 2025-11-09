@@ -476,3 +476,32 @@ class BiatronForCausalLM(BiatronPreTrainedModel, GenerationMixin):
             hidden_states=outputs.hidden_states,
             attentions=outputs.attentions,
         )
+        
+    def add_new_tokens(self, new_num_tokens: int):
+        """Resize token embeddings to accomodate new tokens.
+
+        Args:
+            new_num_tokens (`int`): The new number of tokens in the embedding matrix.
+
+        Returns:
+            `int`: The number of tokens added to the vocabulary.
+        """
+        old_num_tokens = self.model.embed_tokens.num_embeddings
+        num_added_tokens = new_num_tokens - old_num_tokens
+        assert num_added_tokens >= 0, (
+            f"`new_num_tokens` ({new_num_tokens}) should be greater than or equal to "
+            f"the vocabulary size ({old_num_tokens})"
+        )
+        
+        new_tokens = torch.randn(num_added_tokens, self.model.embed_tokens.embedding_dim) * 0.02
+        self.model.embed_tokens.weight.data = torch.cat([self.model.embed_tokens.weight.data, new_tokens], dim=0)
+        self.model.embed_tokens.num_embeddings = self.model.embed_tokens.weight.data.shape[0]
+        self.model.config.vocab_size = self.model.embed_tokens.num_embeddings
+        self.tie_weights()
+        
+        assert self.model.embed_tokens.num_embeddings == new_num_tokens, (
+            f"Embedding matrix not correctly resized: {self.model.embed_tokens.num_embeddings} != {new_num_tokens}"
+        )
+        assert torch.equal(self.model.embed_tokens.weight.data, self.lm_head.weight.data), "Weights of `lm_head` and `embed_tokens` are not tied after resizing."
+        
+        print(f"Added {num_added_tokens} tokens to the vocabulary of the model.")
