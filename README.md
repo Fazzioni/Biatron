@@ -1,2 +1,2 @@
 
-pip install git+https://github.com/Fazzioni/megatron.git@install
+pip install git+https://github.com/Fazzioni/Biatron.git@install
