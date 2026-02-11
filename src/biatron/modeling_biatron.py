@@ -97,7 +97,7 @@ class BiatronRotaryEmbedding(nn.Module):
             post-processing scaling factor applied to the computed cos/sin (unused in this type of RoPE).
         """
         base = 10_000.0
-        dim = getattr(config, "head_dim", None) or config.hidden_size // config.num_attention_heads
+        dim = 64
 
         attention_factor = 1.0  # Unused in this type of RoPE
 
