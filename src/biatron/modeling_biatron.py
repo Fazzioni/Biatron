@@ -79,6 +79,7 @@ class BiatronRotaryEmbedding(nn.Module):
 
     
     def compute_default_rope_parameters(
+        self,
         config  = None,
         device: Optional["torch.device"] = None,
         seq_len: int | None = None,
@@ -96,15 +97,25 @@ class BiatronRotaryEmbedding(nn.Module):
             Tuple of (`torch.Tensor`, `float`), containing the inverse frequencies for the RoPE embeddings and the
             post-processing scaling factor applied to the computed cos/sin (unused in this type of RoPE).
         """
-        base = 10_000.0
-        dim = 64
+        
+        #import pdb;
+        #pdb.set_trace()
 
+        base = config.rope_parameters['rope_theta']
+        dim = config.head_dim
         attention_factor = 1.0  # Unused in this type of RoPE
+        
 
         # Compute the inverse frequencies
-        inv_freq = 1.0 / (
-            base ** (torch.arange(0, dim, 2, dtype=torch.int64).to(device=device, dtype=torch.float) / dim)
-        )
+        kw = {}
+        if not device is None:
+            kw['device'] =device
+
+        
+        inv_freq = 1.0 / ( 
+            base ** (torch.arange(0, dim, 2, dtype=torch.int64).to(dtype=torch.float, **kw) / dim)
+            )
+        
         return inv_freq, attention_factor
 
     
@@ -445,8 +456,8 @@ class BiatronModel(BiatronPreTrainedModel):
 
 @auto_docstring
 class BiatronForCausalLM(BiatronPreTrainedModel, GenerationMixin):
-    _tied_weights_keys = ["lm_head.weight"]
-    _tp_plan = {"lm_head": "colwise_rep"}
+    _tied_weights_keys = {"lm_head.weight": "model.embed_tokens.weight"}
+    _tp_plan = {"lm_head": "colwise_gather_output"}
     _pp_plan = {"lm_head": (["hidden_states"], ["logits"])}
 
     def __init__(self, config):
