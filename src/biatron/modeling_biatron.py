@@ -79,7 +79,7 @@ class BiatronRotaryEmbedding(nn.Module):
 
     
     def compute_default_rope_parameters(
-        config: LlamaConfig | None = None,
+        config  = None,
         device: Optional["torch.device"] = None,
         seq_len: int | None = None,
     ) -> tuple["torch.Tensor", float]:
